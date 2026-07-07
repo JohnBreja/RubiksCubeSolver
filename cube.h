@@ -10,12 +10,12 @@ typedef enum {
 } Color;
 
 typedef enum {
-    FRONT = 0,
-    BACK = 1,
-    RIGHT = 2,
-    LEFT = 3,
-    UP = 4,
-    DOWN = 5
+    DOWN = 0,   // WHITE
+    FRONT = 1,  // BLUE
+    UP = 2,     // YELLOW
+    LEFT = 3,   // ORANGE
+    RIGHT = 4,  // RED
+    BACK = 5    // GREEN
 } FaceIndex;
 
 typedef enum { LEFT_TO_RIGHT, RIGHT_TO_LEFT } RowDir;

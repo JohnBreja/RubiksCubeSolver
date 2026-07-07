@@ -1,0 +1,28 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build",
+            "type": "shell",
+            "command": "gcc",
+            "args": ["-g", "-Wall",
+                     "-o", "${workspaceFolder}/program",
+                     "${workspaceFolder}/main.c",
+                     "${workspaceFolder}/cube.c"],
+            "problemMatcher": ["$gcc"]
+        },
+        {
+            "label": "Build & Run",
+            "type": "shell",
+            "command": "${workspaceFolder}/program",
+            "dependsOn": "Build",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "clear": true
+            }
+        }
+    ]
+}
