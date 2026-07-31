@@ -10,9 +10,9 @@ typedef enum {
 } Color;
 
 typedef enum {
-    DOWN = 0,   // WHITE
+    BOTTOM = 0,   // WHITE
     FRONT = 1,  // BLUE
-    UP = 2,     // YELLOW
+    TOP = 2,     // YELLOW
     LEFT = 3,   // ORANGE
     RIGHT = 4,  // RED
     BACK = 5    // GREEN
