@@ -9,7 +9,16 @@ int main(void) {
     Cube *cube = init_cube();
     print_cube(cube);
     printf("--------------------------");
-    shift_col(cube, 0, BOTTOM_TO_TOP);
+
+    // shift_col(cube, 2, BOTTOM_TO_TOP);
+    // shift_col(cube, 0, TOP_TO_BOTTOM);
+
+
+    // shift_row(cube, 0, LEFT_TO_RIGHT);
+    // shift_row(cube, 2, RIGHT_TO_LEFT);
+
+    shift_cir(cube, 0, true);
+
     print_cube(cube);
     free_cube(cube);
     return 0;

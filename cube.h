@@ -20,6 +20,7 @@ typedef enum {
 
 typedef enum { LEFT_TO_RIGHT, RIGHT_TO_LEFT } RowDir;
 typedef enum { TOP_TO_BOTTOM, BOTTOM_TO_TOP } ColDir;
+typedef enum { LEFT_SHIFT, RIGHT_SHIFT } ShiftDirection;
 
 typedef struct {
     Color cells[3][3];
@@ -54,6 +55,7 @@ int count_moves(Cube *cube);
 
 void shift_row(Cube *cube, int row, RowDir dir);
 void shift_col(Cube *cube, int col, ColDir dir);
+void shift_cir(Cube *cube, int circle, bool clockwise);
 void rotate_face(Cube *cube, FaceIndex face, bool clockwise);
 
 // High level

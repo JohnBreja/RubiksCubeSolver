@@ -103,56 +103,114 @@ int count_moves(Cube *cube){
 }
 
 
-//cube->sides[row_cycle[i]].cells[0][0] = 2;
-void shift_row(Cube *cube, int row, RowDir dir){
-    assert(row == 0 || row == 2); // middle row will never rotate in this solver
+void universal_shift(Color *lines[4][3], ShiftDirection dir){
+    Color temp[3];
+    int line_i, line_finish, move_by;
 
-    static const FaceIndex rtl[4] = {LEFT, FRONT, RIGHT, BACK};
-    static const FaceIndex ltr[4] = {RIGHT, FRONT, LEFT, BACK};
-    const FaceIndex *row_cycle = (dir == LEFT_TO_RIGHT) ? ltr : rtl;
-
-    int opposite_row = row == 0 ? 2 : 0;
-
-    Face last_side_to_copy = cube->sides[BACK];
-
-    for(int col = 0; col < 3; col++){
-        cube->sides[BACK].cells[opposite_row][col] = cube->sides[row_cycle[0]].cells[row][col];
+    // pick where we start, where we stop and which way we walk the lines
+    // left shift goes 0 -> 3, right shift goes the other way
+    if(dir == LEFT_SHIFT){
+        line_i = 0;
+        line_finish = 3;
+        move_by = 1;
+    }
+    else{
+        line_i = 3;
+        line_finish = 0;
+        move_by = -1;
     }
 
+    // save the first line, the loop overwrites it first so we put it back at the end
+    for(int i = 0; i < 3; i++){
+        temp[i] = *lines[line_i][i];
+    }
 
-    for(int i = 0; i < 2; i++){
-        for(int col = 0; col < 3; col++){
-            cube->sides[row_cycle[i]].cells[row][col] = cube->sides[row_cycle[i+1]].cells[row][col];
+    // every line takes the values from the next one in the walk direction
+    while(line_i != line_finish){
+        for(int cell_i = 0; cell_i < 3; cell_i ++){
+            *lines[line_i][cell_i] = *lines[line_i + move_by][cell_i];
         }
-    }
-    
-    for(int col = 0; col < 3; col++){
-        cube->sides[row_cycle[2]].cells[row][col] = last_side_to_copy.cells[opposite_row][col];
+        line_i += move_by;
     }
 
-    //print_cube(cube);
-
+    // last line gets the saved one so nothing is lost
+    for(int i = 0; i < 3; i++){
+        *lines[line_finish][i] = temp[i];
+    }
 }
+
 
 void shift_col(Cube *cube, int col, ColDir dir){
-    assert(col == 0 || col == 2); // middle row will never rotate in this solver
+    assert(col == 0 || col == 2); // middle column never rotates in this solver
 
-    static const FaceIndex faces[4] = {TOP, FRONT, BOTTOM, BACK};
+    Color *lines[4][3];
+    FaceIndex faces[4] = {TOP, FRONT, BOTTOM, BACK};
 
-    Face last_side_to_copy = cube->sides[TOP];
-    
-
-    for(int i = 0; i < 3; i++){
-        for(int row = 0; row < 3; row++){
-            cube->sides[faces[i]].cells[row][col] = cube->sides[faces[i + 1]].cells[row][col];
+    for(int face_i = 0; face_i < 4; face_i++){
+        for(int cell_i = 0; cell_i < 3; cell_i++){
+            lines[face_i][cell_i] = &(cube->sides[faces[face_i]].cells[cell_i][col]);
         }
     }
 
-    for(int row = 0; row < 3; row++){
-        cube->sides[BACK].cells[row][col] = last_side_to_copy.cells[row][col];
+    // !dir turns ColDir into ShiftDirection: top_to_bottom -> right shift, bottom_to_top -> left shift
+    universal_shift(lines, !dir);
+}
+
+//cube->sides[row_cycle[i]].cells[0][0] = 2;
+void shift_row(Cube *cube, int row, RowDir dir){
+    assert(row == 0 || row == 2); // middle row never rotates in this solver
+
+    Color *lines[4][3];
+    FaceIndex faces[4] = {LEFT, FRONT, RIGHT, BACK};
+
+    int opposite_row = row == 2 ? 0 : 2; 
+
+    for(int face_i = 0; face_i < 3; face_i++){
+        for(int cell_i = 0; cell_i < 3; cell_i++){
+            lines[face_i][cell_i] = &(cube->sides[faces[face_i]].cells[row][cell_i]);
+        }
     }
 
+    for(int cell_i = 0; cell_i < 3; cell_i++){
+        lines[3][cell_i] = &(cube->sides[faces[3]].cells[opposite_row][cell_i]);
+    }
+
+    universal_shift(lines, !dir);
 }
+
+// REPAIR THIS
+void shift_cir(Cube *cube, int circle, bool clockwise){
+    assert(circle == 0 || circle == 2); // middle circle never rotates in this solver
+
+    Color *lines[4][3];
+    FaceIndex faces[4] = {TOP, RIGHT, BOTTOM, LEFT};
+    
+    int top_i = circle == 2 ? 0 : 2;
+    int right_i = circle;
+    int bottom_i = circle; 
+    int left_i = circle == 2 ? 0 : 2;
+    
+    for(int cell_i = 0; cell_i < 3; cell_i++){
+        lines[0][cell_i] = &(cube->sides[faces[0]].cells[top_i][cell_i]);
+    }
+
+    for(int cell_i = 0; cell_i < 3; cell_i++){
+        lines[1][cell_i] = &(cube->sides[faces[1]].cells[bottom_i][cell_i]);
+    }
+
+    for(int cell_i = 0; cell_i < 3; cell_i++){
+        lines[2][cell_i] = &(cube->sides[faces[2]].cells[cell_i][right_i]);
+    }
+
+    for(int cell_i = 0; cell_i < 3; cell_i++){
+        lines[3][cell_i] = &(cube->sides[faces[3]].cells[cell_i][left_i]);
+    }
+    
+    universal_shift(lines, LEFT_SHIFT);
+
+
+}
+
 
 void rotate_face(Cube *cube, FaceIndex face, bool clockwise){
     // Color last_to_copy_corner = cube->sides[face].cells[0][0];
