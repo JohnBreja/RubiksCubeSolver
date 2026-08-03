@@ -17,7 +17,8 @@ int main(void) {
     // shift_row(cube, 0, LEFT_TO_RIGHT);
     // shift_row(cube, 2, RIGHT_TO_LEFT);
 
-    shift_cir(cube, 0, true);
+    // shift_cir(cube, 0, true);
+    // shift_cir(cube, 2, false);
 
     print_cube(cube);
     free_cube(cube);

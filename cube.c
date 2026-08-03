@@ -183,30 +183,39 @@ void shift_cir(Cube *cube, int circle, bool clockwise){
     assert(circle == 0 || circle == 2); // middle circle never rotates in this solver
 
     Color *lines[4][3];
+    // walk order around the circle: TOP -> RIGHT -> BOTTOM -> LEFT
     FaceIndex faces[4] = {TOP, RIGHT, BOTTOM, LEFT};
+
+    // which row/col of each face touches this slice
+    // circle 0 = front slice, circle 2 = back slice
+    int top_i = circle == 2 ? 0 : 2;    // top face uses a row
+    int right_i = circle;               // right face uses a col
+    int bottom_i = circle;              // bottom face uses a row
+    int left_i = circle == 2 ? 0 : 2;   // left face uses a col
     
-    int top_i = circle == 2 ? 0 : 2;
-    int right_i = circle;
-    int bottom_i = circle; 
-    int left_i = circle == 2 ? 0 : 2;
-    
+    // top and bottom are rows so cell_i walks along the columns
     for(int cell_i = 0; cell_i < 3; cell_i++){
         lines[0][cell_i] = &(cube->sides[faces[0]].cells[top_i][cell_i]);
     }
 
+    // bottom is filled reversed so it lines up at the corner with the others
     for(int cell_i = 0; cell_i < 3; cell_i++){
-        lines[1][cell_i] = &(cube->sides[faces[1]].cells[bottom_i][cell_i]);
+        lines[2][cell_i] = &(cube->sides[faces[2]].cells[bottom_i][2 - cell_i]);
     }
 
+    // right and left are cols so cell_i walks along the rows
     for(int cell_i = 0; cell_i < 3; cell_i++){
-        lines[2][cell_i] = &(cube->sides[faces[2]].cells[cell_i][right_i]);
+        lines[1][cell_i] = &(cube->sides[faces[1]].cells[cell_i][right_i]);
     }
 
+    // left is filled reversed too, same corner reason as bottom
     for(int cell_i = 0; cell_i < 3; cell_i++){
-        lines[3][cell_i] = &(cube->sides[faces[3]].cells[cell_i][left_i]);
+        lines[3][cell_i] = &(cube->sides[faces[3]].cells[2 - cell_i][left_i]);
     }
-    
-    universal_shift(lines, LEFT_SHIFT);
+
+    // NOTE: rows and cols meet at the corners so some lines probably need the
+    // reversed fill order, universal_shift only copies index to index. Test it.
+    universal_shift(lines, (ShiftDirection) clockwise);
 
 
 }
@@ -216,7 +225,7 @@ void rotate_face(Cube *cube, FaceIndex face, bool clockwise){
     // Color last_to_copy_corner = cube->sides[face].cells[0][0];
     // Color last_to_copy_side = cube->sides[face].cells[0][1];
     
-    // // NOT clockwise side = (0,1) <- (1,0) <- (2,1) <- (1,2) <- last
+    // // NOT clockwise side = (0,1) <- (1,0void shift_col(Cube *cube, int col, ColDir dir);) <- (2,1) <- (1,2) <- last
     // // NOT clockwise corner = (0,0) <- (2,0) <- (2,2) <- (0,2) <- last
 
     // clockwise side = (0,1) <- (1,2) <- (2,1) <- (1,0) <- last
