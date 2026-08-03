@@ -8,17 +8,21 @@ int main(void) {
     // shift row test
     Cube *cube = init_cube();
     print_cube(cube);
-    printf("--------------------------");
+    printf("--------------------------\n");
 
     // shift_col(cube, 2, BOTTOM_TO_TOP);
     // shift_col(cube, 0, TOP_TO_BOTTOM);
 
 
-    // shift_row(cube, 0, LEFT_TO_RIGHT);
-    // shift_row(cube, 2, RIGHT_TO_LEFT);
+    shift_row(cube, 0, LEFT_TO_RIGHT);
+    shift_row(cube, 2, LEFT_TO_RIGHT);
+    print_cube(cube);
+    printf("--------------------------\n");
 
     // shift_cir(cube, 0, true);
     // shift_cir(cube, 2, false);
+
+    rotate_face(cube, FRONT, false);
 
     print_cube(cube);
     free_cube(cube);

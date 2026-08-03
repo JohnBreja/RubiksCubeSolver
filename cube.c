@@ -220,19 +220,58 @@ void shift_cir(Cube *cube, int circle, bool clockwise){
 
 }
 
+void print(int num){
+    printf("%d\n", num);
+}
+
 
 void rotate_face(Cube *cube, FaceIndex face, bool clockwise){
-    // Color last_to_copy_corner = cube->sides[face].cells[0][0];
-    // Color last_to_copy_side = cube->sides[face].cells[0][1];
-    
-    // // NOT clockwise side = (0,1) <- (1,0void shift_col(Cube *cube, int col, ColDir dir);) <- (2,1) <- (1,2) <- last
-    // // NOT clockwise corner = (0,0) <- (2,0) <- (2,2) <- (0,2) <- last
+    Color temp_corner = cube->sides[face].cells[0][0];
+    Color temp_side = cube->sides[face].cells[0][1];
 
-    // clockwise side = (0,1) <- (1,2) <- (2,1) <- (1,0) <- last
-    // clockwise corner = (0,0) <- (0,2) <- (2,2) <- (0,2) <- last
-    // for(int i = 0; i < 3; i++){
-        
-    // }
+    int temp_ax_corner, temp_ax_side;
+    
+    int x_side = 0;
+    int y_side = 1;
+    int x_corner = 0;
+    int y_corner = 0;
+
+    // yeah I know this looks ugly but it works, tested it
+    // this is just the rotate-around-origin formula from math class baked in.
+    // source cell of (x,y) is (x_sign*y + x_plus, y_sign*x + y_plus).
+    // the sign flips the axis and the plus is the N-1 shift so indexes never go negative.
+    // clockwise and counter just swap which axis gets flipped.
+    int x_plus, y_plus, x_sign, y_sign;
+
+    if(clockwise){
+        x_plus = 2;
+        x_sign = -1;
+        y_plus = 0;
+        y_sign = 1;
+    }
+    else{
+        x_plus = 0;
+        x_sign = 1;
+        y_plus = 2;
+        y_sign = -1;
+    }
+    
+    //cube->sides[face].cells[x_side][y_side] = cube->sides[face].cells[y_side][2 - x_side];
+
+    for(int i = 0; i < 3; i++){
+        cube->sides[face].cells[x_side][y_side] = cube->sides[face].cells[x_sign * y_side + x_plus][y_sign * x_side + y_plus];
+        temp_ax_side = x_side;
+        x_side = x_sign * y_side + x_plus;
+        y_side = y_sign * temp_ax_side + y_plus;
+
+        cube->sides[face].cells[x_corner][y_corner] = cube->sides[face].cells[x_sign * y_corner + x_plus][y_sign * x_corner + y_plus];
+        temp_ax_corner = x_corner;
+        x_corner = x_sign * y_corner + x_plus;
+        y_corner = y_sign * temp_ax_corner + y_plus;
+    }
+    cube->sides[face].cells[x_side][y_side] = temp_side;
+    cube->sides[face].cells[x_corner][y_corner] = temp_corner;
+
 }
 
 void move_UP(Cube *cube, bool clockwise){
