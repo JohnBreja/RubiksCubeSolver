@@ -153,7 +153,7 @@ void shift_col(Cube *cube, int col, ColDir dir){
     }
 
     // !dir turns ColDir into ShiftDirection: top_to_bottom -> right shift, bottom_to_top -> left shift
-    universal_shift(lines, !dir);
+    universal_shift(lines, dir);
 }
 
 //cube->sides[row_cycle[i]].cells[0][0] = 2;
@@ -171,8 +171,10 @@ void shift_row(Cube *cube, int row, RowDir dir){
         }
     }
 
+    // BACK is filled reversed so the seam lines up at the corner,
+    // same trick as in shift_cir. real cube confirms it.
     for(int cell_i = 0; cell_i < 3; cell_i++){
-        lines[3][cell_i] = &(cube->sides[faces[3]].cells[opposite_row][cell_i]);
+        lines[3][cell_i] = &(cube->sides[faces[3]].cells[opposite_row][2 - cell_i]);
     }
 
     universal_shift(lines, !dir);
@@ -236,8 +238,8 @@ void rotate_face(Cube *cube, FaceIndex face, bool clockwise){
     int x_corner = 0;
     int y_corner = 0;
 
-    // yeah I know this looks ugly but it works, tested it
-    // this is just the rotate-around-origin formula from math class baked in.
+    // yeah I know this looks scary but it works, tested it
+    // this is just the rotate-around-origin formula from math class.
     // source cell of (x,y) is (x_sign*y + x_plus, y_sign*x + y_plus).
     // the sign flips the axis and the plus is the N-1 shift so indexes never go negative.
     // clockwise and counter just swap which axis gets flipped.
@@ -256,8 +258,6 @@ void rotate_face(Cube *cube, FaceIndex face, bool clockwise){
         y_sign = -1;
     }
     
-    //cube->sides[face].cells[x_side][y_side] = cube->sides[face].cells[y_side][2 - x_side];
-
     for(int i = 0; i < 3; i++){
         cube->sides[face].cells[x_side][y_side] = cube->sides[face].cells[x_sign * y_side + x_plus][y_sign * x_side + y_plus];
         temp_ax_side = x_side;
@@ -274,26 +274,36 @@ void rotate_face(Cube *cube, FaceIndex face, bool clockwise){
 
 }
 
-void move_UP(Cube *cube, bool clockwise){
-    // TODO
+void move_TOP(Cube *cube, bool clockwise){
+    rotate_face(cube, TOP, clockwise);
+    shift_row(cube, 0, clockwise);
 }
 
-void move_DOWN(Cube *cube, bool clockwise){
-    // TODO
+void move_BOTTOM(Cube *cube, bool clockwise){
+    // BOTTOM is opposite TOP, so its local indexing flips rotate_face's
+    // "clockwise" vs the outside view. invert to match a real cube.
+    rotate_face(cube, BOTTOM, clockwise);
+    shift_row(cube, 2, !clockwise);
 }
 
 void move_LEFT(Cube *cube, bool clockwise){
-    // TODO
+    rotate_face(cube, LEFT, clockwise);
+    shift_col(cube, 0, clockwise);
 }
 
 void move_RIGHT(Cube *cube, bool clockwise){
-    // TOOD
+    // RIGHT's local indexing makes rotate_face's "clockwise" come out flipped
+    // vs the outside view, so we invert here to match a real cube (like move_TOP)
+    rotate_face(cube, RIGHT, clockwise);
+    shift_col(cube, 2, !clockwise);
 }
 
 void move_FRONT(Cube *cube, bool clockwise){
-    // TOOD
+    rotate_face(cube, FRONT, clockwise);
+    shift_cir(cube, 0, clockwise);
 }
 
 void move_BACK(Cube *cube, bool clockwise){
-    // TODO
+    rotate_face(cube, BACK, clockwise);
+    shift_cir(cube, 2, !clockwise);
 }

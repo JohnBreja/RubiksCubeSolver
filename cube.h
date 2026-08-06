@@ -60,8 +60,8 @@ void rotate_face(Cube *cube, FaceIndex face, bool clockwise);
 
 // High level
 
-void move_UP(Cube *cube, bool clockwise);
-void move_DOWN(Cube *cube, bool clockwise);
+void move_TOP(Cube *cube, bool clockwise);
+void move_BOTTOM(Cube *cube, bool clockwise);
 void move_LEFT(Cube *cube, bool clockwise);
 void move_RIGHT(Cube *cube, bool clockwise);
 void move_FRONT(Cube *cube, bool clockwise);
