@@ -30,6 +30,9 @@ typedef struct {
     Face sides[6];
 } Cube;
 
+// pointer to a move function, lets us keep the moves in an array
+typedef void (*MoveFn)(Cube *cube, bool clockwise);
+
 
 // ----- Main function for RB -----
 

@@ -8,31 +8,10 @@ int main(void) {
     // shift row test
     Cube *cube = init_cube();
     print_cube(cube);
-    printf("--------------------------\n");
 
-    move_LEFT(cube, false);
-    print_cube(cube);
-    printf("--------------------------\n");
+    randomise_cube(cube);
 
-    move_TOP(cube, true);
     print_cube(cube);
-    printf("--------------------------\n");
-
-    move_FRONT(cube, false);
-    print_cube(cube);
-    printf("--------------------------\n");
-
-    move_RIGHT(cube, true);
-    print_cube(cube);
-    printf("--------------------------HERE\n");
-
-    move_BOTTOM(cube, false);
-    print_cube(cube);
-    printf("--------------------------\n");
-
-    move_BACK(cube, false);
-    print_cube(cube);
-    printf("--------------------------\n");
 
     free_cube(cube);
     return 0;
@@ -81,5 +60,39 @@ int main(void) {
 
 */
 
+/*
 
+    // shift row test
+    Cube *cube = init_cube();
+    print_cube(cube);
+    printf("--------------------------\n");
+
+    move_LEFT(cube, false);
+    print_cube(cube);
+    printf("--------------------------\n");
+
+    move_TOP(cube, true);
+    print_cube(cube);
+    printf("--------------------------\n");
+
+    move_FRONT(cube, false);
+    print_cube(cube);
+    printf("--------------------------\n");
+
+    move_RIGHT(cube, true);
+    print_cube(cube);
+    printf("--------------------------HERE\n");
+
+    move_BOTTOM(cube, false);
+    print_cube(cube);
+    printf("--------------------------\n");
+
+    move_BACK(cube, false);
+    print_cube(cube);
+    printf("--------------------------\n");
+
+    free_cube(cube);
+    return 0;
+
+*/
 

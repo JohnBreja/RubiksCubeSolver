@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <assert.h>
+#include <string.h>
 
 #include "cube.h"
 
@@ -91,11 +92,45 @@ Cube *copy_cube(Cube *cube){
 }
 
 void randomise_cube(Cube *cube){
-    // TODO
+    // all six moves in an array so we can pick one by index
+    MoveFn moves[6] = { move_TOP, move_BOTTOM, move_LEFT,
+                    move_RIGHT, move_FRONT, move_BACK };
+    int function_i, clockwise;
+    MoveFn move_fun;
+
+    // 100 random moves to scramble the cube
+    for (int i = 0; i < 100; i ++){
+        function_i = rand() % 6;        // pick a random move 0..5
+        move_fun = moves[function_i];   // pull it out of the array
+        clockwise = i & 1;              // last bit of i alternates 0,1,0,1 -> flip direction each move
+        move_fun(cube, (bool) clockwise);
+    }
 }
 
 bool is_solved(Cube *cube){
-    // TODO
+    static Cube solved;
+    static bool ready = false;
+
+    if(!ready){
+        FaceIndex faces[6] = {BOTTOM, FRONT, TOP, LEFT, RIGHT, BACK};
+        Color colors[6] = {WHITE, BLUE, YELLOW, ORANGE, RED, GREEN};
+        
+        for(int face_i = 0; face_i < 6; face_i++){
+            for (int row_i = 0; row_i < 3; row_i++)
+            {
+                for (int col_i = 0; col_i < 3; col_i++)
+                {
+                    solved.sides[faces[face_i]].cells[row_i][col_i] = colors[face_i];
+                }
+                
+            }
+            
+        }
+
+        ready = true;
+    }
+    
+    return memcmp(cube, &solved, sizeof(Cube)) == 0;
 }
 
 int count_moves(Cube *cube){
@@ -225,7 +260,6 @@ void shift_cir(Cube *cube, int circle, bool clockwise){
 void print(int num){
     printf("%d\n", num);
 }
-
 
 void rotate_face(Cube *cube, FaceIndex face, bool clockwise){
     Color temp_corner = cube->sides[face].cells[0][0];
